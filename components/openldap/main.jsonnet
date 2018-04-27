@@ -8,8 +8,8 @@ local name = inv.parameters.openldap.instance_name;
 
 {
   local c = self,
-  openldap_deployment: statefulset.OpenldapDeployment(name + "-server", self.openldap_secret),
-  ldapadmin_deployment: statefulset.LdapAdminDeployment(name + "-admin", self.openldap_secret),
+  openldap_deployment: deployments.OpenldapDeployment(name + "-server", self.openldap_secret),
+  ldapadmin_deployment: deployments.LdapAdminDeployment(name + "-admin", self.openldap_secret),
   openldap_secret: secret.OpenldapSecret(name),
 
   openldap_service: kube.Service(name + "-server") {

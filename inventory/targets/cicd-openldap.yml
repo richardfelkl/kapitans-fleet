@@ -1,5 +1,6 @@
 classes:
-  - cluster.openldap
+  - cluster.minikube
+  - component.openldap
 
 parameters:
   target_name: cicd-openldap
