@@ -1,6 +1,5 @@
 classes:
   - cluster.openldap
-  - component.openldap
 
 parameters:
   target_name: cicd-openldap
