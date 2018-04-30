@@ -13,12 +13,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-{% set i = inventory.parameters %}
 DIR=$(dirname ${BASH_SOURCE[0]})
 
-for SECTION in pre-deploy manifests
+${DIR}/setup_context.sh
+${DIR}/setup_cluster.sh
+
+# Create namespace before anything else
+${DIR}/kubectl.sh apply -f ${DIR}/../manifests/namespace.yml
+
+for SECTION in manifests
 do
   echo "## run kubectl apply for ${SECTION}"
-  kapitan secrets --reveal -f ${DIR}/../${SECTION}/ | ${DIR}/kubectl.sh apply -f - | column -t
+  ${DIR}/kubectl.sh apply -f ${DIR}/../${SECTION}/ | column -t
 done

@@ -1,0 +1,11 @@
+# class for all targets deployed on minikube
+#
+classes:
+  - cluster.common
+
+parameters:
+  cluster:
+    type: minikube
+    id: k8s-lab
+    name: k8s-lab
+    user: kubelet-k8s-lab

@@ -1,5 +1,5 @@
 classes:
-  - cluster.minikube
+  - cluster.k8s-lab
   - component.openldap
 
 parameters:
