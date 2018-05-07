@@ -4,23 +4,37 @@ classes:
 parameters:
   openldap:
     hostname: localhost
-    image: "osixia/openldap:1.1.8"
-    ldapadminimage: "tcpcloud/phpldapadmin:0.6.12"
-    admin_password: r00tme
-    config_password: r00tme
-    server_ip: "10.254.33.10"
-    admin_ip: "10.254.33.11"
-    volumes:
-      database: "/srv/volumes/openldap/database"
-      config: "/srv/volumes/openldap/config"
-    openldapenv:
-      HOSTNAME: "ldap01.mcp-drivetrain.local"
-      LDAP_ORGANISATION: "mcp-drivetrain"
-      LDAP_DOMAIN: "mcp-drivetrain.local"
-      LDAP_TLS: "false"
-    ldapadminenv:
-      PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'cicd-openldap-server'}]},{'login': [{'bind_id': 'cn=admin,dc=mcp-drivetrain,dc=local'},{'bind_pass': 'r00tme'}]}]}]"
-      PHPLDAPADMIN_HTTPS: "false"
-      PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
-      PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
-      PHPLDAPADMIN_THEME: mirantis
+    secret:
+      name: ${openldap:instance_name}
+      admin_password: r00tme
+      config_password: r00tme
+    server:
+      deployment:
+        name: ${openldap:instance_name}-server
+        image: "osixia/openldap:1.1.8"
+        volumes:
+          database: "/srv/volumes/openldap/database"
+          config: "/srv/volumes/openldap/config"
+        env:
+          HOSTNAME: "ldap01.mcp-drivetrain.local"
+          LDAP_ORGANISATION: "mcp-drivetrain"
+          LDAP_DOMAIN: "mcp-drivetrain.local"
+          LDAP_TLS: "false"
+      service:
+        name: ${openldap:instance_name}-server
+        type: ClusterIP
+        ip: "10.254.33.10"
+    ldapadmin:
+      deployment:
+        name: ${openldap:instance_name}-ldapadmin
+        image: "tcpcloud/phpldapadmin:0.6.12"
+        env:
+          PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'cicd-openldap-server'}]},{'login': [{'bind_id': 'cn=admin,dc=mcp-drivetrain,dc=local'},{'bind_pass': 'r00tme'}]}]}]"
+          PHPLDAPADMIN_HTTPS: "false"
+          PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
+          PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
+          PHPLDAPADMIN_THEME: mirantis
+      service:
+        name: ${openldap:instance_name}-ldapadmin
+        type: ClusterIP
+        ip: "10.254.33.11"

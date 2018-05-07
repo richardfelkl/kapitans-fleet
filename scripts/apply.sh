@@ -21,7 +21,7 @@ ${DIR}/setup_context.sh
 ${DIR}/setup_cluster.sh
 
 # Create namespace before anything else
-${DIR}/kubectl.sh apply -f ${DIR}/../manifests/namespace.yml
+${DIR}/kubectl.sh apply -f ${DIR}/../pre-deploy/00_namespace.yml
 
 for SECTION in manifests
 do
