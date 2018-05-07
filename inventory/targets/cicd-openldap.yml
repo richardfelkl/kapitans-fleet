@@ -1,6 +1,6 @@
 classes:
   - cluster.k8s-lab
-  - components.namespace
+  - component.namespace
   - component.openldap
 
 parameters:

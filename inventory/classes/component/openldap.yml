@@ -14,22 +14,13 @@ parameters:
       database: "/srv/volumes/openldap/database"
       config: "/srv/volumes/openldap/config"
     openldapenv:
-      HOSTNAME:
-        value: "ldap01.mcp-drivetrain.local"
-      #- name: LDAP_ORGANISATION
-      #  value: "mcp-drivetrain"
-      #- name: LDAP_DOMAIN
-      #  value: "mcp-drivetrain.local"
-      #- name: LDAP_TLS
-      #  value: "false"
+      HOSTNAME: "ldap01.mcp-drivetrain.local"
+      LDAP_ORGANISATION: "mcp-drivetrain"
+      LDAP_DOMAIN: "mcp-drivetrain.local"
+      LDAP_TLS: "false"
     ldapadminenv:
-      #- name: PHPLDAPADMIN_LDAP_HOSTS
-      #  value: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'cicd-openldap-server'}]},{'login': [{'bind_id': 'cn=admin,dc=mcp-drivetrain,dc=local'},{'bind_pass': 'r00tme'}]}]}]"
-      PHPLDAPADMIN_HTTPS:
-        value: "false"
-      #- name: PHPLDAPADMIN_TRUST_PROXY_SSL
-      #  value: "true"
-      #- name: PHPLDAPADMIN_SERVER_ADMIN
-      #  value: "admin@localhost"
-      #- name: PHPLDAPADMIN_THEME
-      #  value: mirantis
+      PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'cicd-openldap-server'}]},{'login': [{'bind_id': 'cn=admin,dc=mcp-drivetrain,dc=local'},{'bind_pass': 'r00tme'}]}]}]"
+      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
+      PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
+      PHPLDAPADMIN_THEME: mirantis
