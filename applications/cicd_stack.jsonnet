@@ -5,10 +5,10 @@ local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
 
 {
-  cicd_secret: kube.Secret(inv.parameters.cicdStack.secrets.cicd_secret.name) {
+  cicd_secret: kube.Secret(inv.parameters.cicd_stack.secrets.cicd_secret.name) {
     data_: {
-      "LDAP_ADMIN_PASSWORD": inv.parameters.cicdStack.secrets.cicd_secret.admin_password,
-      "LDAP_CONFIG_PASSWORD": inv.parameters.cicdStack.secrets.cicd_secret.config_password,
+      "LDAP_ADMIN_PASSWORD": inv.parameters.cicd_stack.secrets.cicd_secret.admin_password,
+      "LDAP_CONFIG_PASSWORD": inv.parameters.cicd_stack.secrets.cicd_secret.config_password,
     }
   },
 
@@ -17,7 +17,7 @@ local inv = kap.inventory();
       template+: {
         spec+: {
           containers_+: {
-            jenkinsMaster+: { env_+: { ADMIN_PASSWORD: kube.SecretKeyRef($.cicd_secret, "LDAP_ADMIN_PASSWORD")} }
+            jenkinsmaster+: { env_+: { ADMIN_PASSWORD: kube.SecretKeyRef($.cicd_secret, "LDAP_ADMIN_PASSWORD")} }
           },
         },
       },

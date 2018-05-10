@@ -5,12 +5,12 @@ local inv = kap.inventory();
 
 local jenkins_home_volume = kube.HostPathVolume(inv.parameters.jenkins.master.deployment.volumes.jenkins_home);
 
-local jenkins_master_container = kube.Container("jenkinsMaster") {
+local jenkins_master_container = kube.Container("jenkinsmaster") {
   image: inv.parameters.jenkins.master.deployment.image,
 
   ports_+: {
     http: { containerPort: 8080 },
-    slaveListener: { containerPort: 50000 },
+    slavelistener: { containerPort: 50000 },
   },
 
   env_+: if ("env" in inv.parameters.jenkins.master.deployment) then inv.parameters.jenkins.master.deployment.env else {}
@@ -22,7 +22,7 @@ local jenkins_master_container = kube.Container("jenkinsMaster") {
       template+: {
         spec+: {
           containers_+: {
-            jenkinsMaster: jenkins_master_container
+            jenkinsmaster: jenkins_master_container
           },
           volumes_+:{
             jenkins_home: jenkins_home_volume

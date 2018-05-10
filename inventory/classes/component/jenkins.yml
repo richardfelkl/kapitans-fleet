@@ -24,4 +24,4 @@ parameters:
       service:
         name: ${jenkins:instance_name}
         type: ClusterIP
-        ip: "10.254.33.10"
+        ip: "10.254.33.12"

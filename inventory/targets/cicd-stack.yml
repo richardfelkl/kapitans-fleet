@@ -6,6 +6,7 @@ classes:
 
 parameters:
   target_name: cicd-stack
+  namespace: cicd
   kapitan:
     vars:
       target: ${target_name}
@@ -29,19 +30,18 @@ parameters:
       recipients:
         - name: example@kapitan.dev
           fingerprint: D9234C61F58BEB3ED8552A57E28DC07A3CBFAE7C
-  namespace: cicd
 
   openldap:
-    instance_name: cicd-openldap
+    instance_name: ${target_name}-openldap
     replicas: 1
 
   jenkins:
-    instance_name: cicd-jenkins
+    instance_name: ${target_name}-jenkins
     replicas: 1
 
-  cicdStack:
+  cicd_stack:
     secrets:
       cicd_secret:
-        name: ${target_name}
+        name: ${target_name}-secret
         admin_password: r00tme
         config_password: r00tme
