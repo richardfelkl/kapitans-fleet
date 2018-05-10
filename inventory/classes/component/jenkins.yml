@@ -1,0 +1,27 @@
+classes:
+  - cluster.common
+
+parameters:
+  jenkins:
+    hostname: localhost
+    master:
+      deployment:
+        name: ${jenkins:instance_name}
+        image: "mirantis/jenkins:2.104"
+        volumes:
+          jenkins_home: "/srv/volumes/jenkins"
+        env:
+          JAVA_OPTS: ' -server -XX:+AlwaysPreTouch -Xloggc:/var/jenkins_home/gc-%t.log -XX:NumberOfGCLogFiles=5
+            -XX:+UseGCLogFileRotation -XX:GCLogFileSize=20m -XX:+PrintGC -XX:+PrintGCDateStamps
+            -XX:+PrintGCDetails -XX:+PrintHeapAtGC -XX:+PrintGCCause -XX:+PrintTenuringDistribution
+            -XX:+PrintReferenceGC -XX:+PrintAdaptiveSizePolicy -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent
+            -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions
+            -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1
+            -Djenkins.install.runSetupWizard=false -Dhudson.DNSMultiCast.disabled=true -Dhudson.udp=-1
+            -Dhudson.footerURL=https://www.mirantis.com '
+          JENKINS_OPTS: " --handlerCountMax=40"
+          ADMIN_USER: "admin"
+      service:
+        name: ${jenkins:instance_name}
+        type: ClusterIP
+        ip: "10.254.33.10"

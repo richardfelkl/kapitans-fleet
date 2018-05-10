@@ -4,10 +4,6 @@ classes:
 parameters:
   openldap:
     hostname: localhost
-    secret:
-      name: ${openldap:instance_name}
-      admin_password: r00tme
-      config_password: r00tme
     server:
       deployment:
         name: ${openldap:instance_name}-server

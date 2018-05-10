@@ -28,12 +28,12 @@ local ldapadmin_container = kube.Container("ldapadmin") {
 };
 
 {
-  OpenldapDeployment(name, secret): kube.Deployment(name) {
+  OpenldapDeployment(name): kube.Deployment(name) {
     spec+: {
       template+: {
         spec+: {
           containers_+: {
-            openldap: openldap_container + { env_+: { LDAP_ADMIN_PASSWORD: kube.SecretKeyRef(secret, "LDAP_ADMIN_PASSWORD"), LDAP_CONFIG_PASSWORD: kube.SecretKeyRef(secret, "LDAP_CONFIG_PASSWORD")} }
+            openldap: openldap_container
           },
           volumes_+:{
             ldap_database: ldap_db_volume,
@@ -43,7 +43,7 @@ local ldapadmin_container = kube.Container("ldapadmin") {
       },
     },
   },
-  LdapAdminDeployment(name, secret): kube.Deployment(name) {
+  LdapAdminDeployment(name): kube.Deployment(name) {
     spec+: {
       template+: {
         spec+: {

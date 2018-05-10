@@ -2,9 +2,10 @@ classes:
   - cluster.k8s-lab
   - component.namespace
   - component.openldap
+  - component.jenkins
 
 parameters:
-  target_name: cicd-openldap
+  target_name: cicd-stack
   kapitan:
     vars:
       target: ${target_name}
@@ -18,17 +19,12 @@ parameters:
     - output_path: manifests
       input_type: jsonnet
       input_paths:
-        - components/openldap/main.jsonnet
+        - applications/cicd_stack.jsonnet
       output_type: yaml
     - output_path: scripts
       input_type: jinja2
       input_paths:
         - scripts
-#    - output_path: .
-#      output_type: yaml
-#      input_type: jinja2
-#      input_paths:
-#        - docs/openldap/README.md
     secrets:
       recipients:
         - name: example@kapitan.dev
@@ -38,3 +34,14 @@ parameters:
   openldap:
     instance_name: cicd-openldap
     replicas: 1
+
+  jenkins:
+    instance_name: cicd-jenkins
+    replicas: 1
+
+  cicdStack:
+    secrets:
+      cicd_secret:
+        name: ${target_name}
+        admin_password: r00tme
+        config_password: r00tme
