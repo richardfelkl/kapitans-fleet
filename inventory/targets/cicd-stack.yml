@@ -3,6 +3,7 @@ classes:
   - component.namespace
   - component.openldap
   - component.jenkins
+  - component.gerrit
 
 parameters:
   target_name: cicd-stack
@@ -39,9 +40,15 @@ parameters:
     instance_name: ${target_name}-jenkins
     replicas: 1
 
+  gerrit:
+    instance_name: ${target_name}-gerrit
+    replicas: 1
+
   cicd_stack:
     secrets:
       cicd_secret:
         name: ${target_name}-secret
         admin_password: r00tme
         config_password: r00tme
+        gerrit_db_password: r00tme
+        mysql_root_password: r00tme

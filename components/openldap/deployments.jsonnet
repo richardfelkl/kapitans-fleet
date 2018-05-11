@@ -48,7 +48,7 @@ local ldapadmin_container = kube.Container("ldapadmin") {
       template+: {
         spec+: {
           containers_+: {
-            ldapAdmin: ldapadmin_container
+            ldapadmin: ldapadmin_container
           },
         },
       },

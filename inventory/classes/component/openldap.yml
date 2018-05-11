@@ -4,6 +4,13 @@ classes:
 parameters:
   openldap:
     hostname: localhost
+    global:
+      ldap_domain_org: mcp-drivetrain
+      ldap_domain_suffix: local
+      ldap_domain_name: ${openldap:global:ldap_domain_org}.${openldap:global:ldap_domain_suffix}
+      ldap_domain: dc=${openldap:global:ldap_domain_org},dc=${openldap:global:ldap_domain_suffix}
+      ldap_hostname: ldap01.${openldap:global:ldap_domain}
+      ldap_tls: "false"
     server:
       deployment:
         name: ${openldap:instance_name}-server
@@ -12,10 +19,10 @@ parameters:
           database: "/srv/volumes/openldap/database"
           config: "/srv/volumes/openldap/config"
         env:
-          HOSTNAME: "ldap01.mcp-drivetrain.local"
-          LDAP_ORGANISATION: "mcp-drivetrain"
-          LDAP_DOMAIN: "mcp-drivetrain.local"
-          LDAP_TLS: "false"
+          HOSTNAME: ${openldap:global:ldap_hostname}
+          LDAP_ORGANISATION: ${openldap:global:ldap_domain_org}
+          LDAP_DOMAIN: ${openldap:global:ldap_domain_name}
+          LDAP_TLS: ${openldap:global:ldap_tls}
       service:
         name: ${openldap:instance_name}-server
         type: ClusterIP
@@ -25,7 +32,7 @@ parameters:
         name: ${openldap:instance_name}-ldapadmin
         image: "tcpcloud/phpldapadmin:0.6.12"
         env:
-          PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'cicd-openldap-server'}]},{'login': [{'bind_id': 'cn=admin,dc=mcp-drivetrain,dc=local'},{'bind_pass': 'r00tme'}]}]}]"
+          #PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'${openldap:server:service:name}'}]},{'login': [{'bind_id': 'cn=admin,${openldap:global:ldap_domain}'},{'bind_pass': 'r00tme'}]}]}]"
           PHPLDAPADMIN_HTTPS: "false"
           PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
           PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
