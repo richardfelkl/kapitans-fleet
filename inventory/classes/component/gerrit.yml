@@ -1,6 +1,5 @@
 classes:
   - cluster.common
-  - component.openldap
 
 parameters:
   gerrit:
@@ -8,34 +7,32 @@ parameters:
     server:
       deployment:
         name: ${gerrit:instance_name}-server
-        image: "tcpcloud/gerrit:2.13.6"
+        image:
+          registry: "tcpcloud"
+          name: "gerrit"
+          tag: "2.13.6"
         volumes:
           reviewsite: "/var/gerrit/review_site"
         env:
           DATABASE_TYPE: "mysql"
-          DB_PORT_3306_TCP_ADDR: ${gerrit:database:service:ip}
+          DB_PORT_3306_TCP_ADDR: ${gerrit:database:service:name}
           DB_ENV_MYSQL_USER: "gerrit"
           DB_ENV_MYSQL_DB: "gerrit"
-          AUTH_TYPE: LDAP
-          LDAP_SERVER: "ldap://${openldap:server:service:ip}"
-          LDAP_ACCOUNTPATTERN: 'uid={username}'
-          LDAP_ACCOUNTBASE: "ou=people,${openldap:global:ldap_domain}"
-          LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
-          LDAP_USERNAME: "admin"
-          WEB_URL: "http://${gerrit:server:service:ip}:8080"
+          WEB_URL: "http://${gerrit:server:service:name}:8080"
           HTTPD_LISTENURL: "http://*:8080/"
-          GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"
           GERRIT_ADMIN_EMAIL: "admin@localhost"
           CANLOADINIFRAME: "true"
           JAVA_OPTIONS: ""
       service:
         name: ${gerrit:instance_name}-server
         type: ClusterIP
-        ip: "10.254.33.13"
     database:
       deployment:
         name: ${gerrit:instance_name}-database
-        image: "tcpcloud/mysql:5.6"
+        image:
+          registry: "tcpcloud"
+          name: "mysql"
+          tag: "5.6"
         env:
           MYSQL_USER: gerrit
           MYSQL_DATABASE: gerrit
@@ -45,4 +42,3 @@ parameters:
       service:
         name: ${gerrit:instance_name}-database
         type: ClusterIP
-        ip: "10.254.33.14"

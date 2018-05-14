@@ -11,11 +11,9 @@ local inv = kap.inventory();
   gerrit_service: kube.Service(inv.parameters.gerrit.server.service.name) {
       target_pod:: c["gerrit_deployment"].spec.template,
       target_container_name:: "gerrit",
-      spec+: { clusterIP: inv.parameters.gerrit.server.service.ip }
   },
   mysql_service: kube.Service(inv.parameters.gerrit.database.service.name) {
       target_pod:: c["mysql_deployment"].spec.template,
       target_container_name:: "mysql",
-      spec+: { clusterIP: inv.parameters.gerrit.database.service.ip }
   },
 }

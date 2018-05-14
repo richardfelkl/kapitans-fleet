@@ -6,7 +6,9 @@ local inv = kap.inventory();
 local jenkins_home_volume = kube.HostPathVolume(inv.parameters.jenkins.master.deployment.volumes.jenkins_home);
 
 local jenkins_master_container = kube.Container("jenkinsmaster") {
-  image: inv.parameters.jenkins.master.deployment.image,
+  image: inv.parameters.jenkins.master.deployment.image.registry +
+         inv.parameters.jenkins.master.deployment.image.name +
+         inv.parameters.jenkins.master.deployment.image.tag,
 
   ports_+: {
     http: { containerPort: 8080 },

@@ -12,7 +12,6 @@ local inv = kap.inventory();
       "LDAP_CONFIG_PASSWORD": inv.parameters.cicd_stack.secrets.cicd_secret.config_password,
       "GERRIT_DB_PASSWORD": inv.parameters.cicd_stack.secrets.cicd_secret.gerrit_db_password,
       "MYSQL_ROOT_PASSWORD": inv.parameters.cicd_stack.secrets.cicd_secret.mysql_root_password,
-
     }
   },
 
@@ -27,8 +26,6 @@ local inv = kap.inventory();
       },
     },
   },
-
-  jenkins_service: jenkins.jenkins_service,
 
   openldap_deployment+: openldap.openldap_deployment{
     spec+: {
@@ -49,7 +46,7 @@ local inv = kap.inventory();
           containers_+: {
             ldapadmin+: { env_+: { PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'" + inv.parameters.openldap.server.service.name +
                                   "'}]},{'login': [{'bind_id': 'cn=admin," + inv.parameters.openldap.global.ldap_domain + "'},{'bind_pass': '" + kube.SecretKeyRef($.cicd_secret, "LDAP_ADMIN_PASSWORD") + "'}]}]}]"} }
-          }
+          },
         },
       },
     },
@@ -80,12 +77,23 @@ local inv = kap.inventory();
     },
   },
 
-  openldap_service: openldap.openldap_service,
+  openldap_service+: openldap.openldap_service{
+      spec+: { clusterIP: inv.parameters.openldap.server.service.ip }
+  },
 
-  ldapadmin_service: openldap.ldapadmin_service,
+  ldapadmin_service+: openldap.ldapadmin_service{
+      spec+: { clusterIP: inv.parameters.openldap.ldapadmin.service.ip }
+  },
 
-  gerrit_service: gerrit.gerrit_service,
+  jenkins_service+: jenkins.jenkins_service{
+      spec+: { clusterIP: inv.parameters.jenkins.master.service.ip }
+  },
 
-  mysql_service: gerrit.mysql_service,
+  gerrit_service+: gerrit.gerrit_service{
+      spec+: { clusterIP: inv.parameters.gerrit.server.service.ip }
+  },
 
+  mysql_service+: gerrit.mysql_service{
+      spec+: { clusterIP: inv.parameters.gerrit.database.service.ip }
+  },
 }

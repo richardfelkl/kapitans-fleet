@@ -5,7 +5,7 @@ parameters:
   openldap:
     hostname: localhost
     global:
-      ldap_domain_org: mcp-drivetrain
+      ldap_domain_org: ldap
       ldap_domain_suffix: local
       ldap_domain_name: ${openldap:global:ldap_domain_org}.${openldap:global:ldap_domain_suffix}
       ldap_domain: dc=${openldap:global:ldap_domain_org},dc=${openldap:global:ldap_domain_suffix}
@@ -14,7 +14,10 @@ parameters:
     server:
       deployment:
         name: ${openldap:instance_name}-server
-        image: "osixia/openldap:1.1.8"
+        image:
+          registry: "osixia"
+          name: openldap
+          tag: "1.1.8"
         volumes:
           database: "/srv/volumes/openldap/database"
           config: "/srv/volumes/openldap/config"
@@ -26,18 +29,17 @@ parameters:
       service:
         name: ${openldap:instance_name}-server
         type: ClusterIP
-        ip: "10.254.33.10"
     ldapadmin:
       deployment:
         name: ${openldap:instance_name}-ldapadmin
-        image: "tcpcloud/phpldapadmin:0.6.12"
+        image:
+          registry: "tcpcloud"
+          name: "phpldapadmin"
+          tag: "0.6.12"
         env:
-          #PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'${openldap:server:service:name}'}]},{'login': [{'bind_id': 'cn=admin,${openldap:global:ldap_domain}'},{'bind_pass': 'r00tme'}]}]}]"
           PHPLDAPADMIN_HTTPS: "false"
           PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
           PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
-          PHPLDAPADMIN_THEME: mirantis
       service:
         name: ${openldap:instance_name}-ldapadmin
         type: ClusterIP
-        ip: "10.254.33.11"

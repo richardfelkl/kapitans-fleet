@@ -11,11 +11,9 @@ local inv = kap.inventory();
   openldap_service: kube.Service(inv.parameters.openldap.server.service.name) {
       target_pod:: c["openldap_deployment"].spec.template,
       target_container_name:: "openldap",
-      spec+: { clusterIP: inv.parameters.openldap.server.service.ip }
   },
   ldapadmin_service: kube.Service(inv.parameters.openldap.ldapadmin.service.name) {
       target_pod:: c["ldapadmin_deployment"].spec.template,
       target_container_name:: "ldapadmin",
-      spec+: { clusterIP: inv.parameters.openldap.ldapadmin.service.ip }
   },
 }

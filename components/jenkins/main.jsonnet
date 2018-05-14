@@ -10,6 +10,5 @@ local inv = kap.inventory();
   jenkins_service: kube.Service(inv.parameters.jenkins.master.service.name) {
       target_pod:: c["jenkins_deployment"].spec.template,
       target_container_name:: "jenkinsmaster",
-      spec+: { clusterIP: inv.parameters.jenkins.master.service.ip }
   },
 }
