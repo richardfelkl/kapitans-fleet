@@ -7,8 +7,8 @@ local gerrit_volume = kube.HostPathVolume(inv.parameters.gerrit.server.deploymen
 local mysql_volume = kube.HostPathVolume(inv.parameters.gerrit.database.deployment.volumes.database);
 
 local gerrit_container = kube.Container("gerrit") {
-  image: inv.parameters.gerrit.server.deployment.image.registry +
-         inv.parameters.gerrit.server.deployment.image.name +
+  image: inv.parameters.gerrit.server.deployment.image.registry + "/" +
+         inv.parameters.gerrit.server.deployment.image.name + ":" +
          inv.parameters.gerrit.server.deployment.image.tag,
 
   ports_+: {
@@ -28,8 +28,8 @@ local gerrit_container = kube.Container("gerrit") {
 };
 
 local mysql_container = kube.Container("mysql") {
-  image: inv.parameters.gerrit.database.deployment.image.registry +
-         inv.parameters.gerrit.database.deployment.image.name +
+  image: inv.parameters.gerrit.database.deployment.image.registry + "/" +
+         inv.parameters.gerrit.database.deployment.image.name + ":" +
          inv.parameters.gerrit.database.deployment.image.tag,
 
   ports_+: {

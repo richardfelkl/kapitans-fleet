@@ -7,8 +7,8 @@ local ldap_db_volume = kube.HostPathVolume(inv.parameters.openldap.server.deploy
 local ldap_config_volume = kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.config);
 
 local openldap_container = kube.Container("openldap") {
-  image: inv.parameters.openldap.server.deployment.image.registry +
-         inv.parameters.openldap.server.deployment.image.name +
+  image: inv.parameters.openldap.server.deployment.image.registry + "/" +
+         inv.parameters.openldap.server.deployment.image.name + ":" +
          inv.parameters.openldap.server.deployment.image.tag,
 
   ports_+: {
@@ -20,8 +20,8 @@ local openldap_container = kube.Container("openldap") {
 };
 
 local ldapadmin_container = kube.Container("ldapadmin") {
-  image: inv.parameters.openldap.ldapadmin.deployment.image.registry +
-         inv.parameters.openldap.ldapadmin.deployment.image.name +
+  image: inv.parameters.openldap.ldapadmin.deployment.image.registry + "/" +
+         inv.parameters.openldap.ldapadmin.deployment.image.name + ":" +
          inv.parameters.openldap.ldapadmin.deployment.image.tag,
   ports_+: {
     http: { containerPort: 80 },
