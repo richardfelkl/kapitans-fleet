@@ -15,6 +15,12 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
     slavelistener: { containerPort: 50000 },
   },
 
+  volumeMounts: [
+  {
+    mountPath: "/var/jenkins_home",
+    name: "jenkins_home",
+  }],
+
   env_+: if ("env" in inv.parameters.jenkins.master.deployment) then inv.parameters.jenkins.master.deployment.env else {},
 
   livenessProbe: {

@@ -16,6 +16,16 @@ local openldap_container = kube.Container("openldap") {
     ldaps: { containerPort: 636 },
   },
 
+  volumeMounts: [
+  {
+    mountPath: "/var/lib/ldap",
+    name: "ldapdatabase",
+  },
+  {
+    mountPath: "/etc/ldap/slapd.d",
+    name: "ldapconfig",
+  }],
+
   env_+: if ("env" in inv.parameters.openldap.server.deployment) then inv.parameters.openldap.server.deployment.env else {}
 };
 
@@ -52,8 +62,8 @@ local ldapadmin_container = kube.Container("ldapadmin") {
             openldap: openldap_container
           },
           volumes_+:{
-            ldap_database: ldap_db_volume,
-            ldap_config: ldap_config_volume,
+            ldapdatabase: ldap_db_volume,
+            ldapconfig: ldap_config_volume,
           },
         },
       },

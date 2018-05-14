@@ -1,4 +1,3 @@
-local containers = import "./containers.libjsonnet";
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
@@ -15,6 +14,12 @@ local gerrit_container = kube.Container("gerrit") {
     http: { containerPort: 8080 },
     ssh: { containerPort: 29418 },
   },
+
+  volumeMounts: [
+  {
+    mountPath: "/var/gerrit/review_site",
+    name: "reviewsite",
+  }],
 
   env_+: if ("env" in inv.parameters.gerrit.server.deployment) then inv.parameters.gerrit.server.deployment.env else {},
 
@@ -35,6 +40,12 @@ local mysql_container = kube.Container("mysql") {
   ports_+: {
     mysql: { containerPort: 3306 },
   },
+
+  volumeMounts: [
+  {
+    mountPath: "/var/lib/mysql",
+    name: "database",
+  }],
 
   env_+: if ("env" in inv.parameters.gerrit.database.deployment) then inv.parameters.gerrit.database.deployment.env else {},
 
