@@ -23,12 +23,24 @@ local ldapadmin_container = kube.Container("ldapadmin") {
   image: inv.parameters.openldap.ldapadmin.deployment.image.registry +
          inv.parameters.openldap.ldapadmin.deployment.image.name +
          inv.parameters.openldap.ldapadmin.deployment.image.tag,
-
   ports_+: {
-    ldap: { containerPort: 80 },
+    http: { containerPort: 80 },
   },
 
-  env_+: if ("env" in inv.parameters.openldap.ldapadmin.deployment) then inv.parameters.openldap.ldapadmin.deployment.env else {}
+  env_+: if ("env" in inv.parameters.openldap.ldapadmin.deployment) then inv.parameters.openldap.ldapadmin.deployment.env else {},
+
+  livenessProbe: {
+    httpGet:{
+      path: "/",
+      port: "http"
+    },
+  },
+  readinessProbe: {
+    httpGet:{
+      path: "/",
+      port: "http"
+    },
+  },
 };
 
 {

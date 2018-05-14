@@ -15,7 +15,22 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
     slavelistener: { containerPort: 50000 },
   },
 
-  env_+: if ("env" in inv.parameters.jenkins.master.deployment) then inv.parameters.jenkins.master.deployment.env else {}
+  env_+: if ("env" in inv.parameters.jenkins.master.deployment) then inv.parameters.jenkins.master.deployment.env else {},
+
+  livenessProbe: {
+    httpGet:{
+      path: "/",
+      port: "http"
+    },
+    initialDelaySeconds: 180,
+  },
+  readinessProbe: {
+    httpGet:{
+      path: "/",
+      port: "http"
+    },
+    initialDelaySeconds: 180,
+  },
 };
 
 {

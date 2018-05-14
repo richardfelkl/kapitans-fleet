@@ -16,7 +16,15 @@ local gerrit_container = kube.Container("gerrit") {
     ssh: { containerPort: 29418 },
   },
 
-  env_+: if ("env" in inv.parameters.gerrit.server.deployment) then inv.parameters.gerrit.server.deployment.env else {}
+  env_+: if ("env" in inv.parameters.gerrit.server.deployment) then inv.parameters.gerrit.server.deployment.env else {},
+
+  readinessProbe: {
+    httpGet:{
+      path: "/",
+      port: "http"
+    },
+    initialDelaySeconds: 180
+  },
 };
 
 local mysql_container = kube.Container("mysql") {
@@ -28,7 +36,28 @@ local mysql_container = kube.Container("mysql") {
     mysql: { containerPort: 3306 },
   },
 
-  env_+: if ("env" in inv.parameters.gerrit.database.deployment) then inv.parameters.gerrit.database.deployment.env else {}
+  env_+: if ("env" in inv.parameters.gerrit.database.deployment) then inv.parameters.gerrit.database.deployment.env else {},
+
+  livenessProbe: {
+    exec:{
+      command: [ "sh", "-c", "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}"]
+    },
+    initialDelaySeconds: 30,
+    periodSeconds: 10,
+    timeoutSeconds: 5,
+    successThreshold: 1,
+    failureThreshold: 3,
+  },
+  readinessProbe: {
+    exec:{
+      command: [ "sh", "-c", "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}"]
+    },
+    initialDelaySeconds: 30,
+    periodSeconds: 10,
+    timeoutSeconds: 5,
+    successThreshold: 1,
+    failureThreshold: 3,
+  },
 };
 
 {
