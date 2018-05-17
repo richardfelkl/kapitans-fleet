@@ -77,23 +77,23 @@ local inv = kap.inventory();
     },
   },
 
-  openldap_service+: openldap.openldap_service{
-      spec+: { clusterIP: inv.parameters.openldap.server.service.ip }
-  },
+  openldap_service+: openldap.openldap_service,
 
-  ldapadmin_service+: openldap.ldapadmin_service{
-      spec+: { clusterIP: inv.parameters.openldap.ldapadmin.service.ip }
-  },
+  ldapadmin_service+: openldap.ldapadmin_service,
 
-  jenkins_service+: jenkins.jenkins_service{
-      spec+: { clusterIP: inv.parameters.jenkins.master.service.ip }
-  },
+  jenkins_service+: jenkins.jenkins_service,
 
-  gerrit_service+: gerrit.gerrit_service{
-      spec+: { clusterIP: inv.parameters.gerrit.server.service.ip }
-  },
+  gerrit_service+: gerrit.gerrit_service,
 
-  mysql_service+: gerrit.mysql_service{
-      spec+: { clusterIP: inv.parameters.gerrit.database.service.ip }
-  },
+  mysql_service+: gerrit.mysql_service,
+
+  gerrit_pvc_reviewsite: gerrit.gerrit_pvc_reviewsite,
+
+  gerrit_pvc_database: gerrit.gerrit_pvc_database,
+
+  jenkins_pvc_jenkinshome: jenkins.jenkins_pvc_jenkinshome,
+
+  openldap_pvc_database: openldap.openldap_pvc_database,
+
+  openldap_pvc_ldapconfig: openldap.openldap_pvc_ldapconfig
 }

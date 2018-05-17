@@ -12,7 +12,11 @@ parameters:
           name: "jenkins"
           tag: "2.104"
         volumes:
-          jenkins_home: "/srv/volumes/jenkins"
+          jenkinshome:
+            name: ${jenkins:instance_name}-jenkinshome
+            type: PersistentVolumeClaim
+            path: "/srv/volumes/jenkins"
+            storage: 10Gi
         env:
           JAVA_OPTS: ' -server -XX:+AlwaysPreTouch -Xloggc:/var/jenkins_home/gc-%t.log -XX:NumberOfGCLogFiles=5
             -XX:+UseGCLogFileRotation -XX:GCLogFileSize=20m -XX:+PrintGC -XX:+PrintGCDateStamps
@@ -26,4 +30,4 @@ parameters:
           ADMIN_USER: "admin"
       service:
         name: ${jenkins:instance_name}
-        type: ClusterIP
+        type: LoadBalancer

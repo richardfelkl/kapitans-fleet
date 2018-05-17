@@ -19,8 +19,14 @@ parameters:
           name: openldap
           tag: "1.1.8"
         volumes:
-          database: "/srv/volumes/openldap/database"
-          config: "/srv/volumes/openldap/config"
+          database:
+            type: PersistentVolumeClaim
+            path: "/srv/volumes/openldap/database"
+            storage: 2Gi
+          config:
+            type: PersistentVolumeClaim
+            path: "/srv/volumes/openldap/config"
+            storage: 2Gi
         env:
           HOSTNAME: ${openldap:global:ldap_hostname}
           LDAP_ORGANISATION: ${openldap:global:ldap_domain_org}
@@ -28,7 +34,7 @@ parameters:
           LDAP_TLS: ${openldap:global:ldap_tls}
       service:
         name: ${openldap:instance_name}-server
-        type: ClusterIP
+        type: LoadBalancer
     ldapadmin:
       deployment:
         name: ${openldap:instance_name}-ldapadmin
@@ -42,4 +48,4 @@ parameters:
           PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
       service:
         name: ${openldap:instance_name}-ldapadmin
-        type: ClusterIP
+        type: LoadBalancer

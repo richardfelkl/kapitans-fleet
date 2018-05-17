@@ -12,7 +12,11 @@ parameters:
           name: "gerrit"
           tag: "2.13.6"
         volumes:
-          reviewsite: "/var/gerrit/review_site"
+          reviewsite:
+            name: ${gerrit:instance_name}-reviewsite
+            type: PersistentVolumeClaim
+            path: "/var/gerrit/review_site"
+            storage: 5Gi
         env:
           DATABASE_TYPE: "mysql"
           DB_PORT_3306_TCP_ADDR: ${gerrit:database:service:name}
@@ -25,7 +29,7 @@ parameters:
           JAVA_OPTIONS: ""
       service:
         name: ${gerrit:instance_name}-server
-        type: ClusterIP
+        type: LoadBalancer
     database:
       deployment:
         name: ${gerrit:instance_name}-database
@@ -38,7 +42,11 @@ parameters:
           MYSQL_DATABASE: gerrit
           MYSQL_START_TIMEOUT: "300"
         volumes:
-          database: "/srv/volumes/mysql"
+          database:
+            name: ${gerrit:instance_name}-database
+            type: PersistentVolumeClaim
+            path: "/srv/volumes/mysql"
+            storage: 5Gi
       service:
         name: ${gerrit:instance_name}-database
-        type: ClusterIP
+        type: LoadBalancer

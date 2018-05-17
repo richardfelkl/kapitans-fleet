@@ -2,9 +2,19 @@ local containers = import "./containers.libjsonnet";
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
+local openldap_pvcs = import "./pvcs.jsonnet";
 
-local ldap_db_volume = kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.database);
-local ldap_config_volume = kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.config);
+local ldap_db_volume =
+if (inv.parameters.openldap.server.deployment.volumes.database.type == "HostPath") then
+  kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.database.path)
+else if (inv.parameters.openldap.server.deployment.volumes.database.type == "PersistentVolumeClaim") then
+  kube.PersistentVolumeClaimVolume(openldap_pvcs.database);
+
+local ldap_config_volume =
+if (inv.parameters.openldap.server.deployment.volumes.config.type == "HostPath") then
+  kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.config.path)
+else if (inv.parameters.openldap.server.deployment.volumes.config.type == "PersistentVolumeClaim") then
+  kube.PersistentVolumeClaimVolume(openldap_pvcs.ldapconfig);
 
 local openldap_container = kube.Container("openldap") {
   image: inv.parameters.openldap.server.deployment.image.registry + "/" +

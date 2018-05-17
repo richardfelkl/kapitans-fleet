@@ -1,14 +1,27 @@
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
+local server = inv.parameters.gerrit.server;
+local database = inv.parameters.gerrit.database;
 
-local gerrit_volume = kube.HostPathVolume(inv.parameters.gerrit.server.deployment.volumes.reviewsite);
-local mysql_volume = kube.HostPathVolume(inv.parameters.gerrit.database.deployment.volumes.database);
+local gerrit_pvcs = import "./pvcs.jsonnet";
+
+local gerrit_volume =
+if (server.deployment.volumes.reviewsite.type == "HostPath") then
+  kube.HostPathVolume(server.deployment.volumes.reviewsite.path)
+else if (server.deployment.volumes.reviewsite.type == "PersistentVolumeClaim") then
+  kube.PersistentVolumeClaimVolume(gerrit_pvcs.reviewsite);
+
+local mysql_volume =
+if (database.deployment.volumes.database.type == "HostPath") then
+  kube.HostPathVolume(database.deployment.volumes.database.path)
+else if (database.deployment.volumes.database.type == "PersistentVolumeClaim") then
+  kube.PersistentVolumeClaimVolume(gerrit_pvcs.database);
 
 local gerrit_container = kube.Container("gerrit") {
-  image: inv.parameters.gerrit.server.deployment.image.registry + "/" +
-         inv.parameters.gerrit.server.deployment.image.name + ":" +
-         inv.parameters.gerrit.server.deployment.image.tag,
+  image: server.deployment.image.registry + "/" +
+         server.deployment.image.name + ":" +
+         server.deployment.image.tag,
 
   ports_+: {
     http: { containerPort: 8080 },
@@ -21,7 +34,7 @@ local gerrit_container = kube.Container("gerrit") {
     name: "reviewsite",
   }],
 
-  env_+: if ("env" in inv.parameters.gerrit.server.deployment) then inv.parameters.gerrit.server.deployment.env else {},
+  env_+: if ("env" in server.deployment) then server.deployment.env else {},
 
   readinessProbe: {
     httpGet:{
@@ -33,9 +46,9 @@ local gerrit_container = kube.Container("gerrit") {
 };
 
 local mysql_container = kube.Container("mysql") {
-  image: inv.parameters.gerrit.database.deployment.image.registry + "/" +
-         inv.parameters.gerrit.database.deployment.image.name + ":" +
-         inv.parameters.gerrit.database.deployment.image.tag,
+  image: database.deployment.image.registry + "/" +
+         database.deployment.image.name + ":" +
+         database.deployment.image.tag,
 
   ports_+: {
     mysql: { containerPort: 3306 },
@@ -47,7 +60,7 @@ local mysql_container = kube.Container("mysql") {
     name: "database",
   }],
 
-  env_+: if ("env" in inv.parameters.gerrit.database.deployment) then inv.parameters.gerrit.database.deployment.env else {},
+  env_+: if ("env" in database.deployment) then database.deployment.env else {},
 
   livenessProbe: {
     exec:{

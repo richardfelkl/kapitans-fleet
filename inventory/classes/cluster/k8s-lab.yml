@@ -5,7 +5,7 @@ classes:
 
 parameters:
   cluster:
-    type: minikube
+    type: baremetal
     id: k8s-lab
     name: k8s-lab
-    user: kubelet-k8s-lab
+    user: admin

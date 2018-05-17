@@ -2,13 +2,20 @@ local containers = import "./containers.libjsonnet";
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
+local master = inv.parameters.jenkins.master;
 
-local jenkins_home_volume = kube.HostPathVolume(inv.parameters.jenkins.master.deployment.volumes.jenkins_home);
+local jenkins_pvcs = import "./pvcs.jsonnet";
+
+local jenkins_home_volume =
+if (master.deployment.volumes.jenkinshome.type == "HostPath") then
+  kube.HostPathVolume(master.deployment.volumes.jenkinshome.path)
+else if (master.deployment.volumes.jenkinshome.type == "PersistentVolumeClaim") then
+  kube.PersistentVolumeClaimVolume(jenkins_pvcs.jenkinshome);
 
 local jenkins_master_container = kube.Container("jenkinsmaster") {
-  image: inv.parameters.jenkins.master.deployment.image.registry + "/" +
-         inv.parameters.jenkins.master.deployment.image.name + ":" +
-         inv.parameters.jenkins.master.deployment.image.tag,
+  image: master.deployment.image.registry + "/" +
+         master.deployment.image.name + ":" +
+         master.deployment.image.tag,
 
   ports_+: {
     http: { containerPort: 8080 },
@@ -18,10 +25,10 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
   volumeMounts: [
   {
     mountPath: "/var/jenkins_home",
-    name: "jenkins_home",
+    name: "jenkinshome",
   }],
 
-  env_+: if ("env" in inv.parameters.jenkins.master.deployment) then inv.parameters.jenkins.master.deployment.env else {},
+  env_+: if ("env" in master.deployment) then master.deployment.env else {},
 
   livenessProbe: {
     httpGet:{
@@ -44,11 +51,15 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
     spec+: {
       template+: {
         spec+: {
+          securityContext:{
+            fsGroup: 1000,
+            runAsUser: 0
+          },
           containers_+: {
             jenkinsmaster: jenkins_master_container
           },
           volumes_+:{
-            jenkins_home: jenkins_home_volume
+            jenkinshome: jenkins_home_volume
           },
         },
       },

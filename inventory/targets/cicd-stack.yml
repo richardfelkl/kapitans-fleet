@@ -37,22 +37,14 @@ parameters:
     replicas: 1
     global:
       ldap_domain_org: mcp-drivetrain
-    server:
-      service:
-        ip: "10.254.33.10"
     ldapadmin:
       deployment:
         env:
           PHPLDAPADMIN_THEME: mirantis
-      service:
-        ip: "10.254.33.11"
 
   jenkins:
     instance_name: ${target_name}-jenkins
     replicas: 1
-    master:
-      service:
-        ip: "10.254.33.12"
 
   gerrit:
     instance_name: ${target_name}-gerrit
@@ -67,11 +59,6 @@ parameters:
           LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
           LDAP_USERNAME: "admin"
           GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"
-      service:
-        ip: "10.254.33.13"
-    database:
-      service:
-        ip: "10.254.33.14"
 
   cicd_stack:
     secrets:
