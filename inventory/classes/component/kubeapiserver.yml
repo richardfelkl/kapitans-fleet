@@ -1,0 +1,13 @@
+classes:
+  - cluster.common
+
+parameters:
+  kubeapiserver:
+    secret:
+      name: ${kubeapiserver:instance_name}-secret
+    server:
+      daemonset:
+        name: ${kubeapiserver:instance_name}-daemonset
+        volumes:
+          sslcertshost: "/usr/local/share/ca-certificates"
+          sslcertshost2: "/etc/kubernetes/ssl"
