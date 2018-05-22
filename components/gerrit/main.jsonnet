@@ -3,28 +3,30 @@ local pvcs = import "./pvcs.jsonnet";
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
+local server = inv.parameters.gerrit.server;
+local database = inv.parameters.gerrit.database;
 
 {
   local c = self,
-  gerrit_deployment: deployments.GerritDeployment(inv.parameters.gerrit.server.deployment.name),
-  mysql_deployment: deployments.MysqlDeployment(inv.parameters.gerrit.database.deployment.name),
+  gerrit_deployment: deployments.GerritDeployment(server.deployment.name),
+  mysql_deployment: deployments.MysqlDeployment(database.deployment.name),
 
-  gerrit_service: kube.Service(inv.parameters.gerrit.server.service.name) {
-      type:: inv.parameters.gerrit.server.service.type,
+  gerrit_service: kube.Service(server.service.name) {
+      type:: server.service.type,
       target_pod:: c["gerrit_deployment"].spec.template,
       target_container_name:: "gerrit",
       spec+:{
-          clusterIP: if ("clusterip" in inv.parameters.gerrit.server.service) then inv.parameters.gerrit.server.service.clusterip else {},
+          clusterIP: if ("clusterip" in server.service) then server.service.clusterip else {},
       },
   },
-  mysql_service: kube.Service(inv.parameters.gerrit.database.service.name) {
-      type:: inv.parameters.gerrit.database.service.type,
+  mysql_service: kube.Service(database.service.name) {
+      type:: database.service.type,
       target_pod:: c["mysql_deployment"].spec.template,
       target_container_name:: "mysql",
       spec+:{
-          clusterIP: if ("clusterip" in inv.parameters.gerrit.database.service) then inv.parameters.gerrit.database.service.clusterip else {},
+          clusterIP: if ("clusterip" in database.service) then database.service.clusterip else {},
       },
   },
-  gerrit_pvc_reviewsite: if (inv.parameters.gerrit.server.deployment.volumes.reviewsite.type == "PersistentVolumeClaim") then pvcs.reviewsite else {},
-  gerrit_pvc_database: if (inv.parameters.gerrit.database.deployment.volumes.database.type == "PersistentVolumeClaim") then pvcs.database else {},
+  gerrit_pvc_reviewsite: if (server.deployment.volumes.reviewsite.type == "PersistentVolumeClaim") then pvcs.reviewsite else {},
+  gerrit_pvc_database: if (database.deployment.volumes.database.type == "PersistentVolumeClaim") then pvcs.database else {},
 }

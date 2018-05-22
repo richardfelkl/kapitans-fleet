@@ -2,24 +2,26 @@ local containers = import "./containers.libjsonnet";
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
+local server = inv.parameters.openldap.server;
+local ldapadmin = inv.parameters.openldap.ldapadmin;
 local openldap_pvcs = import "./pvcs.jsonnet";
 
 local ldap_db_volume =
-if (inv.parameters.openldap.server.deployment.volumes.database.type == "HostPath") then
-  kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.database.path)
-else if (inv.parameters.openldap.server.deployment.volumes.database.type == "PersistentVolumeClaim") then
+if (server.deployment.volumes.database.type == "HostPath") then
+  kube.HostPathVolume(server.deployment.volumes.database.path)
+else if (server.deployment.volumes.database.type == "PersistentVolumeClaim") then
   kube.PersistentVolumeClaimVolume(openldap_pvcs.database);
 
 local ldap_config_volume =
-if (inv.parameters.openldap.server.deployment.volumes.config.type == "HostPath") then
-  kube.HostPathVolume(inv.parameters.openldap.server.deployment.volumes.config.path)
-else if (inv.parameters.openldap.server.deployment.volumes.config.type == "PersistentVolumeClaim") then
+if (server.deployment.volumes.config.type == "HostPath") then
+  kube.HostPathVolume(server.deployment.volumes.config.path)
+else if (server.deployment.volumes.config.type == "PersistentVolumeClaim") then
   kube.PersistentVolumeClaimVolume(openldap_pvcs.ldapconfig);
 
 local openldap_container = kube.Container("openldap") {
-  image: inv.parameters.openldap.server.deployment.image.registry + "/" +
-         inv.parameters.openldap.server.deployment.image.name + ":" +
-         inv.parameters.openldap.server.deployment.image.tag,
+  image: server.deployment.image.registry + "/" +
+         server.deployment.image.name + ":" +
+         server.deployment.image.tag,
 
   ports_+: {
     ldap: { containerPort: 389 },
@@ -36,18 +38,18 @@ local openldap_container = kube.Container("openldap") {
     name: "ldapconfig",
   }],
 
-  env_+: if ("env" in inv.parameters.openldap.server.deployment) then inv.parameters.openldap.server.deployment.env else {}
+  env_+: if ("env" in server.deployment) then server.deployment.env else {}
 };
 
 local ldapadmin_container = kube.Container("ldapadmin") {
-  image: inv.parameters.openldap.ldapadmin.deployment.image.registry + "/" +
-         inv.parameters.openldap.ldapadmin.deployment.image.name + ":" +
-         inv.parameters.openldap.ldapadmin.deployment.image.tag,
+  image: ldapadmin.deployment.image.registry + "/" +
+         ldapadmin.deployment.image.name + ":" +
+         ldapadmin.deployment.image.tag,
   ports_+: {
     http: { containerPort: 80 },
   },
 
-  env_+: if ("env" in inv.parameters.openldap.ldapadmin.deployment) then inv.parameters.openldap.ldapadmin.deployment.env else {},
+  env_+: if ("env" in ldapadmin.deployment) then ldapadmin.deployment.env else {},
 
   livenessProbe: {
     httpGet:{
