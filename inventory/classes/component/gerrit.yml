@@ -4,6 +4,12 @@ classes:
 parameters:
   gerrit:
     hostname: localhost
+    secret:
+      name: ${gerrit:instance_name}-secret
+      data:
+        gerrit_db_password: changeme
+        mysql_root_password: changeme
+        admin_password: changeme
     server:
       deployment:
         name: ${gerrit:instance_name}-server

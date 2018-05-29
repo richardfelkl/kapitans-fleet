@@ -18,7 +18,7 @@ parameters:
     - output_path: manifests
       input_type: jsonnet
       input_paths:
-        - applications/kubernetes_cp.jsonnet
+        - components/kube-apiserver/main.jsonnet
       output_type: yaml
     - output_path: scripts
       input_type: jinja2

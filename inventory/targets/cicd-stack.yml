@@ -21,7 +21,9 @@ parameters:
     - output_path: manifests
       input_type: jsonnet
       input_paths:
-        - applications/cicd_stack.jsonnet
+        - components/openldap/main.jsonnet
+        - components/gerrit/main.jsonnet
+        - components/jenkins/main.jsonnet
       output_type: yaml
     - output_path: scripts
       input_type: jinja2
@@ -37,6 +39,10 @@ parameters:
     replicas: 1
     global:
       ldap_domain_org: mcp-drivetrain
+    secret:
+      data:
+        admin_password: r00tme
+        config_password: r00tme
     ldapadmin:
       deployment:
         env:
@@ -45,10 +51,18 @@ parameters:
   jenkins:
     instance_name: ${target_name}-jenkins
     replicas: 1
+    secret:
+      data:
+        admin_password: ${openldap:secret:data:admin_password}
 
   gerrit:
     instance_name: ${target_name}-gerrit
     replicas: 1
+    secret:
+      data:
+        gerrit_db_password: r00tme
+        mysql_root_password: r00tme
+        admin_password: ${openldap:secret:data:admin_password}
     server:
       deployment:
         env:
@@ -59,12 +73,3 @@ parameters:
           LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
           LDAP_USERNAME: "admin"
           GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"
-
-  cicd_stack:
-    secrets:
-      cicd_secret:
-        name: ${target_name}-secret
-        admin_password: r00tme
-        config_password: r00tme
-        gerrit_db_password: r00tme
-        mysql_root_password: r00tme

@@ -4,6 +4,10 @@ classes:
 parameters:
   jenkins:
     hostname: localhost
+    secret:
+      name: ${jenkins:instance_name}-secret
+      data:
+        admin_password: changeme
     master:
       deployment:
         name: ${jenkins:instance_name}

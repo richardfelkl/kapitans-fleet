@@ -5,11 +5,42 @@ local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
 local ldapadmin = inv.parameters.openldap.ldapadmin;
 local server = inv.parameters.openldap.server;
+local secret = inv.parameters.openldap.secret;
 
 {
   local c = self,
-  openldap_deployment: deployments.OpenldapDeployment(server.deployment.name),
-  ldapadmin_deployment: deployments.LdapAdminDeployment(ldapadmin.deployment.name),
+
+  openldap_secret: kube.Secret(secret.name) {
+    data_: {
+      "LDAP_ADMIN_PASSWORD": secret.data.admin_password,
+      "LDAP_CONFIG_PASSWORD": secret.data.config_password,
+    }
+  },
+
+  openldap_deployment: deployments.OpenldapDeployment(server.deployment.name){
+    spec+: {
+      template+: {
+        spec+: {
+          containers_+: {
+            openldap+: { env_+: { LDAP_ADMIN_PASSWORD: kube.SecretKeyRef($.openldap_secret, "LDAP_ADMIN_PASSWORD"), LDAP_CONFIG_PASSWORD: kube.SecretKeyRef($.openldap_secret, "LDAP_CONFIG_PASSWORD")} }
+          }
+        },
+      },
+    },
+  },
+
+  ldapadmin_deployment: deployments.LdapAdminDeployment(ldapadmin.deployment.name){
+    spec+: {
+      template+: {
+        spec+: {
+          containers_+: {
+            ldapadmin+: { env_+: { PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'server': [{'server': [{'tls': False},{'host':'" + inv.parameters.openldap.server.service.name +
+                                  "'}]},{'login': [{'bind_id': 'cn=admin," + inv.parameters.openldap.global.ldap_domain + "'},{'bind_pass': '" + kube.SecretKeyRef($.openldap_secret, "LDAP_ADMIN_PASSWORD") + "'}]}]}]"} }
+          },
+        },
+      },
+    },
+  },
 
   openldap_service: kube.Service(server.service.name) {
       type:: server.service.type,

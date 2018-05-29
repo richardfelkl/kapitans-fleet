@@ -11,6 +11,11 @@ parameters:
       ldap_domain: dc=${openldap:global:ldap_domain_org},dc=${openldap:global:ldap_domain_suffix}
       ldap_hostname: ldap01.${openldap:global:ldap_domain}
       ldap_tls: "false"
+    secret:
+      name: ${openldap:instance_name}-secret
+      data:
+        admin_password: changeme
+        config_password: changeme
     server:
       deployment:
         name: ${openldap:instance_name}-server
