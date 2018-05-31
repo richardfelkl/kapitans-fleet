@@ -48,6 +48,7 @@ local secret = inv.parameters.openldap.secret;
       target_container_name:: "openldap",
       spec+:{
           clusterIP: if ("clusterip" in server.service ) then server.service.clusterip else {},
+          loadBalancerIP: if ("loadbalancerip" in server.service ) then server.service.loadbalancerip else {},
       },
   },
   ldapadmin_service: kube.Service(ldapadmin.service.name) {
@@ -56,6 +57,7 @@ local secret = inv.parameters.openldap.secret;
       target_container_name:: "ldapadmin",
       spec+:{
           clusterIP: if ("clusterip" in ldapadmin.service) then ldapadmin.service.clusterip else {},
+          loadBalancerIP: if ("loadbalancerip" in ldapadmin.service) then ldapadmin.service.loadbalancerip else {},
       },
   },
   openldap_pvc_database: if (server.deployment.volumes.database.type == "PersistentVolumeClaim") then pvcs.database else {},

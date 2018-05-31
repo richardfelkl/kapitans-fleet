@@ -32,6 +32,7 @@ local secret = inv.parameters.jenkins.secret;
       target_container_name:: "jenkinsmaster",
       spec+:{
         clusterIP: if( "clusterip" in inv.parameters.jenkins.master.service) then inv.parameters.jenkins.master.service.clusterip else {},
+        loadBalancerIP: if( "loadbalancerip" in inv.parameters.jenkins.master.service) then inv.parameters.jenkins.master.service.loadbalancerip else {},
       },
   },
   jenkins_pvc_jenkinshome: if (master.deployment.volumes.jenkinshome.type == "PersistentVolumeClaim") then pvcs.jenkinshome else {},

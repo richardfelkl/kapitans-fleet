@@ -47,6 +47,7 @@ local secret = inv.parameters.gerrit.secret;
       target_container_name:: "gerrit",
       spec+:{
           clusterIP: if ("clusterip" in server.service) then server.service.clusterip else {},
+          loadBalancerIP: if ("loadbalancerip" in server.service) then server.service.loadbalancerip else {},
       },
   },
 
@@ -56,6 +57,7 @@ local secret = inv.parameters.gerrit.secret;
       target_container_name:: "mysql",
       spec+:{
           clusterIP: if ("clusterip" in database.service) then database.service.clusterip else {},
+          loadBalancerIP: if ("loadbalancerip" in database.service) then database.service.loadbalancerip else {},
       },
   },
 

@@ -43,7 +43,12 @@ parameters:
       data:
         admin_password: r00tme
         config_password: r00tme
+    server:
+     service:
+       loadbalancerip: "172.18.168.100"
     ldapadmin:
+      service:
+        loadbalancerip: "172.18.168.101"
       deployment:
         env:
           PHPLDAPADMIN_THEME: mirantis
@@ -54,6 +59,9 @@ parameters:
     secret:
       data:
         admin_password: ${openldap:secret:data:admin_password}
+    master:
+      service:
+        loadbalancerip: "172.18.168.102"
 
   gerrit:
     instance_name: ${target_name}-gerrit
@@ -63,7 +71,12 @@ parameters:
         gerrit_db_password: r00tme
         mysql_root_password: r00tme
         admin_password: ${openldap:secret:data:admin_password}
+    database:
+      service:
+        loadbalancerip: "172.18.168.110"
     server:
+      service:
+        loadbalancerip: "172.18.168.103"
       deployment:
         env:
           AUTH_TYPE: LDAP
