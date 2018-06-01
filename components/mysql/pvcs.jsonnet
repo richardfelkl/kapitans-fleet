@@ -1,8 +1,8 @@
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
-local volumes = inv.parameters.mysql.server.deployment.containers.mysql.volumes;
+local mysql_volumes = inv.parameters.mysql.server.deployment.containers.mysql.volumes;
 
 {
-    database: kube.PersistentVolumeClaim(volumes.database.name) + { storage: volumes.database.storage },
+    database: kube.PersistentVolumeClaim(mysql_volumes.database.name) + { storage: mysql_volumes.database.storage },
 }

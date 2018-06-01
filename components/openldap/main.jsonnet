@@ -60,6 +60,6 @@ local secret = inv.parameters.openldap.secret;
           loadBalancerIP: if ("loadbalancerip" in ldapadmin.service) then ldapadmin.service.loadbalancerip else {},
       },
   },
-  openldap_pvc_database: if (server.deployment.volumes.database.type == "PersistentVolumeClaim") then pvcs.database else {},
-  openldap_pvc_ldapconfig: if (server.deployment.volumes.config.type == "PersistentVolumeClaim") then pvcs.ldapconfig else {},
+  openldap_pvc_database: if (server.deployment.containers.openldap.volumes.database.type == "PersistentVolumeClaim") then pvcs.database else {},
+  openldap_pvc_ldapconfig: if (server.deployment.containers.openldap.volumes.config.type == "PersistentVolumeClaim") then pvcs.ldapconfig else {},
 }

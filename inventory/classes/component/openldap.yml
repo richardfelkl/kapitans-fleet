@@ -19,38 +19,44 @@ parameters:
     server:
       deployment:
         name: ${openldap:instance_name}-server
-        image:
-          registry: "osixia"
-          name: openldap
-          tag: "1.1.8"
-        volumes:
-          database:
-            type: PersistentVolumeClaim
-            path: "/srv/volumes/openldap/database"
-            storage: 2Gi
-          config:
-            type: PersistentVolumeClaim
-            path: "/srv/volumes/openldap/config"
-            storage: 2Gi
-        env:
-          HOSTNAME: ${openldap:global:ldap_hostname}
-          LDAP_ORGANISATION: ${openldap:global:ldap_domain_org}
-          LDAP_DOMAIN: ${openldap:global:ldap_domain_name}
-          LDAP_TLS: ${openldap:global:ldap_tls}
+        containers:
+          openldap:
+            image:
+              registry: "osixia"
+              name: openldap
+              tag: "1.1.8"
+            volumes:
+              database:
+                name: ${openldap:instance_name}-database
+                type: PersistentVolumeClaim
+                path: "/srv/volumes/openldap/database"
+                storage: 2Gi
+              config:
+                name: ${openldap:instance_name}-config
+                type: PersistentVolumeClaim
+                path: "/srv/volumes/openldap/config"
+                storage: 2Gi
+            env:
+              HOSTNAME: ${openldap:global:ldap_hostname}
+              LDAP_ORGANISATION: ${openldap:global:ldap_domain_org}
+              LDAP_DOMAIN: ${openldap:global:ldap_domain_name}
+              LDAP_TLS: ${openldap:global:ldap_tls}
       service:
         name: ${openldap:instance_name}-server
         type: LoadBalancer
     ldapadmin:
       deployment:
         name: ${openldap:instance_name}-ldapadmin
-        image:
-          registry: "tcpcloud"
-          name: "phpldapadmin"
-          tag: "0.6.12"
-        env:
-          PHPLDAPADMIN_HTTPS: "false"
-          PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
-          PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
+        containers:
+          ldapadmin:
+            image:
+              registry: "tcpcloud"
+              name: "phpldapadmin"
+              tag: "0.6.12"
+            env:
+              PHPLDAPADMIN_HTTPS: "false"
+              PHPLDAPADMIN_TRUST_PROXY_SSL: "true"
+              PHPLDAPADMIN_SERVER_ADMIN: "admin@localhost"
       service:
         name: ${openldap:instance_name}-ldapadmin
         type: LoadBalancer

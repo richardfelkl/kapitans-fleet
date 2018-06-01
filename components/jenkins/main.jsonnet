@@ -35,5 +35,5 @@ local secret = inv.parameters.jenkins.secret;
         loadBalancerIP: if( "loadbalancerip" in inv.parameters.jenkins.master.service) then inv.parameters.jenkins.master.service.loadbalancerip else {},
       },
   },
-  jenkins_pvc_jenkinshome: if (master.deployment.volumes.jenkinshome.type == "PersistentVolumeClaim") then pvcs.jenkinshome else {},
+  jenkins_pvc_jenkinshome: if (master.deployment.containers.jenkins.volumes.jenkinshome.type == "PersistentVolumeClaim") then pvcs.jenkinshome else {},
 }

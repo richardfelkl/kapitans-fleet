@@ -54,8 +54,10 @@ parameters:
         #type: ClusterIP
         loadbalancerip: "172.18.168.101"
       deployment:
-        env:
-          PHPLDAPADMIN_THEME: mirantis
+        containers:
+          ldapadmin:
+            env:
+              PHPLDAPADMIN_THEME: mirantis
 
   jenkins:
     instance_name: ${target_name}-jenkins
@@ -99,16 +101,18 @@ parameters:
         #type: ClusterIP
         loadbalancerip: "172.18.168.103"
       deployment:
-        env:
-          DATABASE_TYPE: "mysql"
-          DB_PORT_3306_TCP_ADDR: ${mysql:server:service:name} # mysql-wordpress.default #"10.254.192.52"
-          DB_PORT_3306_TCP_PORT: "3306"
-          DB_ENV_MYSQL_USER: "gerrit"
-          DB_ENV_MYSQL_DB: "gerrit"
-          AUTH_TYPE: LDAP
-          LDAP_SERVER: "ldap://${openldap:server:service:name}"
-          LDAP_ACCOUNTPATTERN: 'uid={username}'
-          LDAP_ACCOUNTBASE: "ou=people,${openldap:global:ldap_domain}"
-          LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
-          LDAP_USERNAME: "admin"
-          GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"
+        containers:
+          gerrit:
+            env:
+              DATABASE_TYPE: "mysql"
+              DB_PORT_3306_TCP_ADDR: ${mysql:server:service:name} # mysql-wordpress.default #"10.254.192.52"
+              DB_PORT_3306_TCP_PORT: "3306"
+              DB_ENV_MYSQL_USER: "gerrit"
+              DB_ENV_MYSQL_DB: "gerrit"
+              AUTH_TYPE: LDAP
+              LDAP_SERVER: "ldap://${openldap:server:service:name}"
+              LDAP_ACCOUNTPATTERN: 'uid={username}'
+              LDAP_ACCOUNTBASE: "ou=people,${openldap:global:ldap_domain}"
+              LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
+              LDAP_USERNAME: "admin"
+              GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"

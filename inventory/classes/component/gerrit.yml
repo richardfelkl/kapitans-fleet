@@ -13,22 +13,24 @@ parameters:
     server:
       deployment:
         name: ${gerrit:instance_name}
-        image:
-          registry: "tcpcloud"
-          name: "gerrit"
-          tag: "2.13.6" #"2.15.x"
-        volumes:
-          reviewsite:
-            name: ${gerrit:instance_name}-reviewsite
-            type: PersistentVolumeClaim
-            path: "/var/gerrit/review_site"
-            storage: 5Gi
-        env:
-          WEB_URL: "http://${gerrit:server:service:name}:8080"
-          HTTPD_LISTENURL: "http://*:8080/"
-          GERRIT_ADMIN_EMAIL: "admin@localhost"
-          CANLOADINIFRAME: "true"
-          JAVA_OPTIONS: ""
+        containers:
+          gerrit:
+            image:
+              registry: "tcpcloud"
+              name: "gerrit"
+              tag: "2.13.6" #"2.15.x"
+            volumes:
+              reviewsite:
+                name: ${gerrit:instance_name}-reviewsite
+                type: PersistentVolumeClaim
+                path: "/var/gerrit/review_site"
+                storage: 5Gi
+            env:
+              WEB_URL: "http://${gerrit:server:service:name}:8080"
+              HTTPD_LISTENURL: "http://*:8080/"
+              GERRIT_ADMIN_EMAIL: "admin@localhost"
+              CANLOADINIFRAME: "true"
+              JAVA_OPTIONS: ""
       service:
         name: ${gerrit:instance_name}
         type: LoadBalancer

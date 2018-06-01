@@ -1,20 +1,19 @@
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
-local server = inv.parameters.gerrit.server;
+local server_containers = inv.parameters.gerrit.server.deployment.containers;
 
 local gerrit_pvcs = import "./pvcs.jsonnet";
 
-local gerrit_volume =
-if (server.deployment.volumes.reviewsite.type == "HostPath") then
-  kube.HostPathVolume(server.deployment.volumes.reviewsite.path)
-else if (server.deployment.volumes.reviewsite.type == "PersistentVolumeClaim") then
-  kube.PersistentVolumeClaimVolume(gerrit_pvcs.reviewsite);
+local gerrit_volume = if (server_containers.gerrit.volumes.reviewsite.type == "HostPath") then
+                        kube.HostPathVolume(server_containers.gerrit.volumes.reviewsite.path)
+                      else if (server_containers.gerrit.volumes.reviewsite.type == "PersistentVolumeClaim") then
+                        kube.PersistentVolumeClaimVolume(gerrit_pvcs.reviewsite);
 
 local gerrit_container = kube.Container("gerrit") {
-  image: server.deployment.image.registry + "/" +
-         server.deployment.image.name + ":" +
-         server.deployment.image.tag,
+  image: server_containers.gerrit.image.registry + "/" +
+         server_containers.gerrit.image.name + ":" +
+         server_containers.gerrit.image.tag,
 
   ports_+: {
     http: { containerPort: 8080 },
@@ -27,7 +26,7 @@ local gerrit_container = kube.Container("gerrit") {
     name: "reviewsite",
   }],
 
-  env_+: if ("env" in server.deployment) then server.deployment.env else {},
+  env_+: if ("env" in server_containers.gerrit) then server_containers.gerrit.env else {},
 
   readinessProbe: {
     httpGet:{

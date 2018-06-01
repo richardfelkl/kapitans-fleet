@@ -4,7 +4,6 @@ local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
 local server = inv.parameters.gerrit.server;
-local database = inv.parameters.gerrit.database;
 local secret = inv.parameters.gerrit.secret;
 
 {
@@ -41,5 +40,5 @@ local secret = inv.parameters.gerrit.secret;
       },
   },
 
-  gerrit_pvc_reviewsite: if (server.deployment.volumes.reviewsite.type == "PersistentVolumeClaim") then pvcs.reviewsite else {},
+  gerrit_pvc_reviewsite: if (server.deployment.containers.gerrit.volumes.reviewsite.type == "PersistentVolumeClaim") then pvcs.reviewsite else {},
 }

@@ -2,20 +2,19 @@ local containers = import "./containers.libjsonnet";
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
-local master = inv.parameters.jenkins.master;
+local master_containers = inv.parameters.jenkins.master.deployment.containers;
 
 local jenkins_pvcs = import "./pvcs.jsonnet";
 
-local jenkins_home_volume =
-if (master.deployment.volumes.jenkinshome.type == "HostPath") then
-  kube.HostPathVolume(master.deployment.volumes.jenkinshome.path)
-else if (master.deployment.volumes.jenkinshome.type == "PersistentVolumeClaim") then
-  kube.PersistentVolumeClaimVolume(jenkins_pvcs.jenkinshome);
+local jenkins_home_volume = if (master_containers.jenkins.volumes.jenkinshome.type == "HostPath") then
+                              kube.HostPathVolume(master_containers.jenkins.volumes.jenkinshome.path)
+                            else if (master_containers.jenkins.volumes.jenkinshome.type == "PersistentVolumeClaim") then
+                              kube.PersistentVolumeClaimVolume(jenkins_pvcs.jenkinshome);
 
 local jenkins_master_container = kube.Container("jenkinsmaster") {
-  image: master.deployment.image.registry + "/" +
-         master.deployment.image.name + ":" +
-         master.deployment.image.tag,
+  image: master_containers.jenkins.image.registry + "/" +
+         master_containers.jenkins.image.name + ":" +
+         master_containers.jenkins.image.tag,
 
   ports_+: {
     http: { containerPort: 8080 },
@@ -28,7 +27,7 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
     name: "jenkinshome",
   }],
 
-  env_+: if ("env" in master.deployment) then master.deployment.env else {},
+  env_+: if ("env" in master_containers.jenkins) then master_containers.jenkins.env else {},
 
   livenessProbe: {
     httpGet:{

@@ -1,9 +1,9 @@
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
-local server = inv.parameters.openldap.server;
+local server_volumes = inv.parameters.openldap.server.deployment.containers.openldap.volumes;
 
 {
-    database: kube.PersistentVolumeClaim("ldapdatabase") + { storage: server.deployment.volumes.database.storage },
-    ldapconfig: kube.PersistentVolumeClaim("ldapconfig") + { storage: server.deployment.volumes.config.storage }
+    database: kube.PersistentVolumeClaim(server_volumes.database.name) + { storage: server_volumes.database.storage },
+    ldapconfig: kube.PersistentVolumeClaim(server_volumes.config.name) + { storage: server_volumes.config.storage }
 }

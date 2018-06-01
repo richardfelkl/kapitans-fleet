@@ -1,9 +1,8 @@
 local kube = import "lib/kube.libjsonnet";
 local kap = import "lib/kapitan.libjsonnet";
 local inv = kap.inventory();
-local server = inv.parameters.gerrit.server;
-local database = inv.parameters.gerrit.database;
+local gerrit_volumes = inv.parameters.gerrit.server.deployment.containers.gerrit.volumes;
 
 {
-    reviewsite: kube.PersistentVolumeClaim(server.deployment.volumes.reviewsite.name) + { storage: server.deployment.volumes.reviewsite.storage },
+    reviewsite: kube.PersistentVolumeClaim(gerrit_volumes.reviewsite.name) + { storage: gerrit_volumes.reviewsite.storage },
 }
