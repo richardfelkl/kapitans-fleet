@@ -36,6 +36,9 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
       port: "http"
     },
     initialDelaySeconds: 180,
+    periodSeconds: 20,
+    timeoutSeconds: 10,
+    failureThreshold: 12,
   },
   readinessProbe: {
     httpGet:{
@@ -43,6 +46,9 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
       port: "http"
     },
     initialDelaySeconds: 180,
+    periodSeconds: 20,
+    timeoutSeconds: 10,
+    failureThreshold: 12,
   },
 };
 
