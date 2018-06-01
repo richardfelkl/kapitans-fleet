@@ -8,6 +8,8 @@ local database = inv.parameters.gerrit.database;
 local secret = inv.parameters.gerrit.secret;
 
 {
+  local c = self,
+
   gerrit_secret: kube.Secret(secret.name) {
     data_: {
       "GERRIT_ADMIN_PWD": secret.data.admin_password,
@@ -16,7 +18,6 @@ local secret = inv.parameters.gerrit.secret;
     }
   },
 
-  local c = self,
   gerrit_deployment: deployments.GerritDeployment(server.deployment.name){
     spec+: {
       template+: {
@@ -24,17 +25,6 @@ local secret = inv.parameters.gerrit.secret;
           containers_+: {
             gerrit+: { env_+: { DB_ENV_MYSQL_PASSWORD: kube.SecretKeyRef($.gerrit_secret, "GERRIT_DB_PASSWORD"), LDAP_PASSWORD: kube.SecretKeyRef($.gerrit_secret, "GERRIT_ADMIN_PWD"),
                                 GERRIT_ADMIN_PWD: kube.SecretKeyRef($.gerrit_secret, "GERRIT_ADMIN_PWD")} }
-          },
-        },
-      },
-    },
-  },
-  mysql_deployment: deployments.MysqlDeployment(database.deployment.name){
-    spec+: {
-      template+: {
-        spec+: {
-          containers_+: {
-            mysql+: { env_+: { MYSQL_ROOT_PASSWORD: kube.SecretKeyRef($.gerrit_secret, "MYSQL_ROOT_PASSWORD"), MYSQL_PASSWORD: kube.SecretKeyRef($.gerrit_secret, "GERRIT_DB_PASSWORD")} }
           },
         },
       },
@@ -51,16 +41,5 @@ local secret = inv.parameters.gerrit.secret;
       },
   },
 
-  mysql_service: kube.Service(database.service.name) {
-      type:: database.service.type,
-      target_pod:: c["mysql_deployment"].spec.template,
-      target_container_name:: "mysql",
-      spec+:{
-          clusterIP: if ("clusterip" in database.service) then database.service.clusterip else {},
-          loadBalancerIP: if ("loadbalancerip" in database.service) then database.service.loadbalancerip else {},
-      },
-  },
-
   gerrit_pvc_reviewsite: if (server.deployment.volumes.reviewsite.type == "PersistentVolumeClaim") then pvcs.reviewsite else {},
-  gerrit_pvc_database: if (database.deployment.volumes.database.type == "PersistentVolumeClaim") then pvcs.database else {},
 }

@@ -6,5 +6,4 @@ local database = inv.parameters.gerrit.database;
 
 {
     reviewsite: kube.PersistentVolumeClaim(server.deployment.volumes.reviewsite.name) + { storage: server.deployment.volumes.reviewsite.storage },
-    database: kube.PersistentVolumeClaim(database.deployment.volumes.database.name) + { storage: database.deployment.volumes.database.storage },
 }

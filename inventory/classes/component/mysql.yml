@@ -1,0 +1,36 @@
+classes:
+  - cluster.common
+
+parameters:
+  mysql:
+    hostname: localhost
+    secret:
+      name: ${mysql:instance_name}
+      data:
+        mysql_db_password: changeme
+        mysql_root_password: changeme
+        admin_password: changeme
+    server:
+      deployment:
+        name: ${mysql:instance_name}
+        containers:
+          mysql:
+            image:
+              registry: "library"
+              name: "mysql"
+              tag: "5.7.22"
+            args:
+              ignore-db-dir: lost+found
+            env:
+              MYSQL_USER: mysql
+              MYSQL_DATABASE: mysql
+              MYSQL_START_TIMEOUT: "300"
+            volumes:
+              database:
+                name: ${mysql:instance_name}
+                type: PersistentVolumeClaim
+                path: "/srv/volumes/mysql"
+                storage: 5Gi
+      service:
+        name: ${mysql:instance_name}
+        type: LoadBalancer

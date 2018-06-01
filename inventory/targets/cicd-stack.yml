@@ -1,8 +1,9 @@
 classes:
-  - cluster.k8s-lab
+  - cluster.drivetrain-lab
   - component.namespace
   - component.openldap
   - component.jenkins
+  - component.mysql
   - component.gerrit
 
 parameters:
@@ -24,6 +25,7 @@ parameters:
         - components/openldap/main.jsonnet
         - components/gerrit/main.jsonnet
         - components/jenkins/main.jsonnet
+        - components/mysql/main.jsonnet
       output_type: yaml
     - output_path: scripts
       input_type: jinja2
@@ -45,9 +47,11 @@ parameters:
         config_password: r00tme
     server:
      service:
+       #type: ClusterIP
        loadbalancerip: "172.18.168.100"
     ldapadmin:
       service:
+        #type: ClusterIP
         loadbalancerip: "172.18.168.101"
       deployment:
         env:
@@ -61,24 +65,46 @@ parameters:
         admin_password: ${openldap:secret:data:admin_password}
     master:
       service:
+        #type: ClusterIP
         loadbalancerip: "172.18.168.102"
+  mysql:
+    instance_name: ${target_name}-mysql
+    replicas: 1
+    secret:
+      data:
+        mysql_db_password: r00tme
+        mysql_root_password: r00tme
+    server:
+      deployment:
+        containers:
+          mysql:
+            env:
+              MYSQL_USER: gerrit
+              MYSQL_DATABASE: gerrit
+            args:
+              sql-mode: ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+      service:
+        #type: ClusterIP
+        loadbalancerip: "172.18.168.110"
 
   gerrit:
     instance_name: ${target_name}-gerrit
     replicas: 1
     secret:
       data:
-        gerrit_db_password: r00tme
-        mysql_root_password: r00tme
+        gerrit_db_password: ${mysql:secret:data:mysql_db_password}
         admin_password: ${openldap:secret:data:admin_password}
-    database:
-      service:
-        loadbalancerip: "172.18.168.110"
     server:
       service:
+        #type: ClusterIP
         loadbalancerip: "172.18.168.103"
       deployment:
         env:
+          DATABASE_TYPE: "mysql"
+          DB_PORT_3306_TCP_ADDR: ${mysql:server:service:name} # mysql-wordpress.default #"10.254.192.52"
+          DB_PORT_3306_TCP_PORT: "3306"
+          DB_ENV_MYSQL_USER: "gerrit"
+          DB_ENV_MYSQL_DB: "gerrit"
           AUTH_TYPE: LDAP
           LDAP_SERVER: "ldap://${openldap:server:service:name}"
           LDAP_ACCOUNTPATTERN: 'uid={username}'

@@ -5,18 +5,18 @@ parameters:
   gerrit:
     hostname: localhost
     secret:
-      name: ${gerrit:instance_name}-secret
+      name: ${gerrit:instance_name}
       data:
         gerrit_db_password: changeme
         mysql_root_password: changeme
         admin_password: changeme
     server:
       deployment:
-        name: ${gerrit:instance_name}-server
+        name: ${gerrit:instance_name}
         image:
           registry: "tcpcloud"
           name: "gerrit"
-          tag: "2.13.6"
+          tag: "2.13.6" #"2.15.x"
         volumes:
           reviewsite:
             name: ${gerrit:instance_name}-reviewsite
@@ -24,35 +24,11 @@ parameters:
             path: "/var/gerrit/review_site"
             storage: 5Gi
         env:
-          DATABASE_TYPE: "mysql"
-          DB_PORT_3306_TCP_ADDR: ${gerrit:database:service:name}
-          DB_ENV_MYSQL_USER: "gerrit"
-          DB_ENV_MYSQL_DB: "gerrit"
           WEB_URL: "http://${gerrit:server:service:name}:8080"
           HTTPD_LISTENURL: "http://*:8080/"
           GERRIT_ADMIN_EMAIL: "admin@localhost"
           CANLOADINIFRAME: "true"
           JAVA_OPTIONS: ""
       service:
-        name: ${gerrit:instance_name}-server
-        type: LoadBalancer
-    database:
-      deployment:
-        name: ${gerrit:instance_name}-database
-        image:
-          registry: "tcpcloud"
-          name: "mysql"
-          tag: "5.6"
-        env:
-          MYSQL_USER: gerrit
-          MYSQL_DATABASE: gerrit
-          MYSQL_START_TIMEOUT: "300"
-        volumes:
-          database:
-            name: ${gerrit:instance_name}-database
-            type: PersistentVolumeClaim
-            path: "/srv/volumes/mysql"
-            storage: 5Gi
-      service:
-        name: ${gerrit:instance_name}-database
+        name: ${gerrit:instance_name}
         type: LoadBalancer
