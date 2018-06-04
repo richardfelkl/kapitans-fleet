@@ -31,7 +31,7 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
 
   livenessProbe: {
     httpGet:{
-      path: "/",
+      path: "/login",
       port: "http"
     },
     initialDelaySeconds: 180,
@@ -41,7 +41,7 @@ local jenkins_master_container = kube.Container("jenkinsmaster") {
   },
   readinessProbe: {
     httpGet:{
-      path: "/",
+      path: "/login",
       port: "http"
     },
     initialDelaySeconds: 180,

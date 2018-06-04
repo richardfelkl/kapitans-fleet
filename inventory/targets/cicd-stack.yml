@@ -48,11 +48,11 @@ parameters:
     server:
      service:
        #type: ClusterIP
-       loadbalancerip: "172.18.168.100"
+       loadbalancerip: "172.18.168.120"
     ldapadmin:
       service:
         #type: ClusterIP
-        loadbalancerip: "172.18.168.101"
+        loadbalancerip: "172.18.168.121"
       deployment:
         containers:
           ldapadmin:
@@ -68,7 +68,8 @@ parameters:
     master:
       service:
         #type: ClusterIP
-        loadbalancerip: "172.18.168.102"
+        #clusterip: "10.254.17.122"
+        loadbalancerip: "172.18.168.122"
   mysql:
     instance_name: ${target_name}-mysql
     replicas: 1
@@ -86,8 +87,8 @@ parameters:
             args:
               sql-mode: ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
       service:
-        #type: ClusterIP
-        loadbalancerip: "172.18.168.110"
+        type: ClusterIP
+        #loadbalancerip: "172.18.168.124"
 
   gerrit:
     instance_name: ${target_name}-gerrit
@@ -99,7 +100,7 @@ parameters:
     server:
       service:
         #type: ClusterIP
-        loadbalancerip: "172.18.168.103"
+        loadbalancerip: "172.18.168.123"
       deployment:
         containers:
           gerrit:
@@ -114,5 +115,5 @@ parameters:
               LDAP_ACCOUNTPATTERN: 'uid={username}'
               LDAP_ACCOUNTBASE: "ou=people,${openldap:global:ldap_domain}"
               LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
-              LDAP_USERNAME: "admin"
+              LDAP_USERNAME: "cn=admin,${openldap:global:ldap_domain}"
               GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"
