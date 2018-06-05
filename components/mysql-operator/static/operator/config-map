@@ -1,0 +1,15 @@
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-operator-config
+  namespace: mysql-operator
+  labels:
+    app: mysql-operator
+    release: my-release
+data:
+  mysql-operator-config.yaml: |
+    images:
+      mysqlServer: mysql/mysql-server
+      mysqlAgent: iad.ocir.io/oracle/mysql-agent

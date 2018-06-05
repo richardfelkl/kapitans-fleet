@@ -5,6 +5,7 @@ classes:
   - component.jenkins
   - component.mysql
   - component.gerrit
+  #- component.mysql-operator
 
 parameters:
   target_name: cicd-stack
@@ -26,7 +27,13 @@ parameters:
         - components/gerrit/main.jsonnet
         - components/jenkins/main.jsonnet
         - components/mysql/main.jsonnet
+        #- components/mysql-operator/main.jsonnet
       output_type: yaml
+    #- output_path: manifests
+    #  input_type: jinja2
+    #  input_paths:
+    #    - components/mysql-operator/static/mysql_operator_static_resources.yml
+    #  output_type: yaml
     - output_path: scripts
       input_type: jinja2
       input_paths:
@@ -70,6 +77,10 @@ parameters:
         #type: ClusterIP
         #clusterip: "10.254.17.122"
         loadbalancerip: "172.18.168.122"
+
+ # mysql:
+ #   instance_name: ${target_name}-mysql-operator
+
   mysql:
     instance_name: ${target_name}-mysql
     replicas: 1
@@ -117,3 +128,4 @@ parameters:
               LDAP_GROUPBASE: "ou=groups,${openldap:global:ldap_domain}"
               LDAP_USERNAME: "cn=admin,${openldap:global:ldap_domain}"
               GERRIT_ADMIN_SSH_PUBLIC: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDmE8T+ddAWd5KiSRqFjnKxSZ/drs2TWxWxerjyv6yuNiHf30QaOYOBXP/WzhSX23TEI7CDmYckjt9sFZXSrhxxGzZgxoNlYfcqULdesoelbFjUnsT8Taa7Gq2X90ZF3jtgLZbxl3yL5KSKCnys0XFFvAOiU2HnVWOl0ji8caTWDg75hRe8ir0/qqVQj0mMcvlVRqTCywhFfRWwrt4HEFN+UG/Z17+CX26hZrP4wfWGxs4Wb3PoOk5htdhMkjoemZRX0Y48sol2x9WEQCVxx29LWvbMCrufcPSwIf9j4TVnfsTMHUsXFBfUr52YlWEvMwjGfm9kW1SVL/AX9cryXIZ"
+

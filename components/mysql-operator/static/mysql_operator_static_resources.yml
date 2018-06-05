@@ -1,0 +1,6 @@
+{%- if inventory.parameters.get("mysql", {}).get("server", {}).cluster is defined %}
+{% include 'operator/resources' %}
+{% include 'operator/rbac' %}
+{% include 'operator/config-map' %}
+{% include 'operator/deployment' %}
+{%- endif %}
