@@ -1,0 +1,24 @@
+classes:
+  - cluster.common
+
+parameters:
+  mysql:
+    secret:
+      name: ${mysql:instance_name}
+      data:
+        mysql_db_password: changeme
+        mysql_root_password: changeme
+        admin_password: changeme
+    server:
+      cluster:
+        name: my-mysql-cluster
+        api_version: mysql.oracle.com/v1
+        kind: MySQLCluster
+        version: 5.7.22-1.1.5
+        multi_master: True
+        replicas: 3
+        secret: ${mysql:instance_name}
+        volume_claim_template:
+          name: data
+          access_mode: RWO
+          size: 1Gi

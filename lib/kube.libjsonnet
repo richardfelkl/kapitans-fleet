@@ -385,4 +385,11 @@ with kapitan compiled manifests that do
   Namespace(name): $._Object("v1", "Namespace", name) {
    spec: {},
   },
+
+  CustomResource(apiVersion, kind, name): $._Object(apiVersion, kind, name) {
+    local customResource = self,
+    spec: {},
+  },
 }
+
+
