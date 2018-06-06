@@ -16,7 +16,7 @@ parameters:
             image:
               registry: "mirantis"
               name: "jenkins"
-              tag: "2.104"
+              tag: "2.100"
             volumes:
               jenkinshome:
                 name: ${jenkins:instance_name}-jenkinshome

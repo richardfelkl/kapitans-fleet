@@ -75,7 +75,6 @@ parameters:
     master:
       service:
         #type: ClusterIP
-        #clusterip: "10.254.17.122"
         loadbalancerip: "172.18.168.122"
 
  # mysql:
@@ -98,8 +97,8 @@ parameters:
             args:
               sql-mode: ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
       service:
-        type: ClusterIP
-        #loadbalancerip: "172.18.168.124"
+        #type: ClusterIP
+        loadbalancerip: "172.18.168.124"
 
   gerrit:
     instance_name: ${target_name}-gerrit
