@@ -1,0 +1,67 @@
+{
+
+  # Set matchExpressions for Affinity
+  AffinityMatchExpression(val):: 
+    [
+      {
+        key: rule["key"],
+        operator: rule["operator"],
+        values: rule.values,
+      } for rule in val.expressions
+    ],
+
+  # Set affinity structure based on its type
+  AffinityType(policy, val):: 
+    if policy == "requiredDuringSchedulingIgnoredDuringExecution" then
+      {
+        nodeSelectorTerms: [
+          {
+            matchExpressions: $.AffinityMatchExpression(val),
+          },
+        ],
+      }
+    else if policy == "preferredDuringSchedulingIgnoredDuringExecution" then
+      [
+        {
+          [if "weight" in val then "weight"]: val.weight,
+          preference: {
+            matchExpressions: $.AffinityMatchExpression(val),
+          },
+        },
+      ],
+
+  # Set affinity for target
+  TargetAffinity(af): {
+    [target]: {
+      [if "node_affinity" in af[target] then "nodeAffinity"]: {
+        [policy]: $.AffinityType(policy, af[target].node_affinity[policy]),
+        for policy in std.objectFields(af[target].node_affinity)
+      },
+    }
+    for target in std.objectFields(af)
+  },
+
+  # Set affinity
+  Affinity(af): {
+    [if "node_affinity" in af then "nodeAffinity"]: {
+      [policy]: $.AffinityType(policy, af.node_affinity[policy]),
+      for policy in std.objectFields(af.node_affinity)
+    },
+  },
+
+  # Set resources for target
+  TargetResource(res): {
+    [t]: {
+      [if "limit" in res[t] then "limits"]: res[t].limit,
+      [if "request" in res[t] then "requests"]: res[t].request,
+      }
+    for t in std.objectFields(res)
+  },
+
+  # Set resources
+  Resource(res): {
+    [if "limit" in res then "limits"]: res.limit,
+    [if "request" in res then "requests"]: res.request,
+  }
+
+}
