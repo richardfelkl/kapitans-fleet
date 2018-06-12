@@ -1,0 +1,219 @@
+classes:
+  - cluster.common
+
+parameters:
+  rook:
+    cluster:
+      name: rook-ceph
+      api_version: ceph.rook.io/v1alpha1
+      mon_count: 3
+      data_host_path: /var/lib/rook
+      host_network: false
+      use_all_nodes: true
+      use_all_devices: false
+      # device_filter: ... 
+      # location: ...
+      # store_type: bluestore
+      # db_size_mb: 1024
+      # journal_size_mb: 1024
+      # storage_directories:
+      # - path: /rook/storage-dir1
+      # - path: /rook/storage-dir2
+      # node:
+      #   172.17.4.101:
+      #     storage_directories:
+      #     - path: "/rook/storage-dir"
+      #     resource:
+      #       limit:
+      #         cpu: "500m"
+      #         memory: "1024Mi"
+      #       request:
+      #         cpu: "500m"
+      #         memory: "1024Mi"
+      #   172.17.4.201:
+      #     devices:
+      #     - name: "sdb"
+      #     - name: "sdc"
+      #     storeType: filestore
+      #   172.17.4.301:
+      #     device_filter: "^sd."
+      # affinity:
+      #   all:
+      #     node_affinity:
+      #       requiredDuringSchedulingIgnoredDuringExecution:
+      #         expressions:
+      #          - key: role
+      #            operator: In
+      #            values:
+      #            - storage-node1
+      #            - storage-node2
+      #       preferredDuringSchedulingIgnoredDuringExecution:
+      #         weight: 1
+      #         expressions:
+      #          - key: role
+      #            operator: In
+      #            values:
+      #            - storage-node1
+      #            - storage-node2
+      #   mon:
+      #     node_affinity:
+      #       requiredDuringSchedulingIgnoredDuringExecution:
+      #         expressions:
+      #          - key: role
+      #            operator: In
+      #            values:
+      #            - storage-node1
+      #            - storage-node2
+      #       preferredDuringSchedulingIgnoredDuringExecution:
+      #         weight: 1
+      #         expressions:
+      #          - key: role
+      #            operator: In
+      #            values:
+      #            - storage-node1
+      #            - storage-node2
+      #   pod_affinity: TODO
+      #     ...
+      #   pod_anti_afinity: TODO
+      #     ...
+      #  resource:
+      #    mgr:
+      #      limit:
+      #        cpu: "500m"
+      #        memory: "1024Mi"
+      #      request:
+      #        cpu: "500m"
+      #        memory: "1024Mi"
+      #    mon:
+      #      limit:
+      #        cpu: "500m"
+      #        memory: "1024Mi"
+      #      request:
+      #        cpu: "500m"
+      #        memory: "1024Mi"
+
+    pool:
+      replicapool:
+        api_version: ceph.rook.io/v1alpha1
+        failure_domain: osd
+        crush_root: default
+        replicated:
+          size: 3
+        #erasure_coded:
+          #data_chunks: 2
+          #conding_chunks: 1
+      # replicapool2:
+      #   api_version: ceph.rook.io/v1alpha1
+      #   failure_domain: host
+      #   crush_root: default2
+      #   replicated:
+      #     size: 1
+      #   #erasure_coded:
+      #     #data_chunks: 2
+      #     #conding_chunks: 1
+    storage_class:
+      name: rook-ceph-block
+      provisioner: ceph.rook.io/block
+      pool: replicapool
+      cluster_ns: ${namespace}
+      #fstype: ext4
+
+    # filesystem:
+    #   api_version: ceph.rook.io/v1alpha1
+    #   name: myfs
+    #   metadata_pool:
+    #     replicated:
+    #       size: 3
+    #   data_pool:
+    #     failure_domain: osd
+    #     replicated:
+    #       size: 3
+    #     #erasure_coded:
+    #     #  data_chunks: 2
+    #     #  coding_chunks: 1
+    #   metadata_server:
+    #     active_count: 1
+    #     active_standby: true
+    #     # affinity:
+    #     #   node_affinity:
+    #     #     requiredDuringSchedulingIgnoredDuringExecution:
+    #     #       expressions:
+    #     #        - key: role
+    #     #          operator: In
+    #     #          values:
+    #     #          - storage-node1
+    #     #          - storage-node2
+    #     #     preferredDuringSchedulingIgnoredDuringExecution:
+    #     #       weight: 1
+    #     #       expressions:
+    #     #        - key: role
+    #     #          operator: In
+    #     #          values:
+    #     #          - storage-node1
+    #     #          - storage-node2
+    #     # resource:
+    #     #   limit:
+    #     #     cpu: "500m"
+    #     #     memory: "1024Mi"
+    #     #   request:
+    #     #     cpu: "500m"
+    #     #     memory: "1024Mi"
+    # object:
+    #   api_version: ceph.rook.io/v1alpha1
+    #   name: my-object-store
+    #   metadata_pool:
+    #     failure_domain: host
+    #     replicated:
+    #       size: 1
+    #   data_pool:
+    #     failure_domain: osd
+    #     replicated:
+    #       size: 1
+    #     #erasure_coded:
+    #     #  data_chunks: 2
+    #     #  coding_chunks: 1
+    #   gateway:
+    #     type: s3
+    #     #sslCertificateRef: ...
+    #     #secure_port: ...
+    #     port: 80
+    #     instances: 1
+    #     all_nodes: false
+    #     # affinity:
+    #     #   node_affinity:
+    #     #     requiredDuringSchedulingIgnoredDuringExecution:
+    #     #       expressions:
+    #     #        - key: role
+    #     #          operator: In
+    #     #          values:
+    #     #          - storage-node1
+    #     #          - storage-node2
+    #     #     preferredDuringSchedulingIgnoredDuringExecution:
+    #     #       weight: 1
+    #     #       expressions:
+    #     #        - key: role
+    #     #          operator: In
+    #     #          values:
+    #     #          - storage-node1
+    #     #          - storage-node2
+    #     # resource:
+    #     #   limit:
+    #     #     cpu: "500m"
+    #     #     memory: "1024Mi"
+    #     #   request:
+    #     #     cpu: "500m"
+    #     #     memory: "1024Mi"
+    # rgw_external_service:
+    #   name: rgw-ext-${rook:object:name}
+    #   label:
+    #     app: ${rook:cluster:name}-rgw
+    #     rook_cluster: ${rook:cluster:name}
+    #     rook_object_store: ${rook:object:name}
+    #   ports:
+    #   - name: rgw
+    #     port: 80
+    #     protocol: TCP
+    #     target_port: 80
+    #   selector: ${rook:rgw_external_service:label}
+    #   session_afinity: None
+    #   type: NodePort

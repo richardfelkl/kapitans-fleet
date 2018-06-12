@@ -1,0 +1,3 @@
+{%- if inventory.parameters.get("rook", {}).cluster is defined %}
+{% include 'operator/resources' %}
+{%- endif %}

@@ -1,0 +1,40 @@
+classes:
+  - cluster.k8s-lab
+  - component.rook
+
+parameters:
+  target_name: rook
+  namespace: rook-ceph
+  kapitan:
+    vars:
+      target: ${target_name}
+      namespace: ${namespace}
+    compile:
+    - output_path: pre-deploy
+      input_type: jsonnet
+      output_type: yaml
+      input_paths:
+        - components/namespace/main.jsonnet
+    - output_path: manifests
+      input_type: jsonnet
+      input_paths:
+        - components/rook/main.jsonnet
+      output_type: yaml
+    - output_path: manifests
+      input_type: jinja2
+      input_paths:
+        - components/rook/static/rook_static_resources.yml
+      output_type: yaml
+    - output_path: scripts
+      input_type: jinja2
+      input_paths:
+        - scripts
+    secrets:
+      recipients:
+        - name: example@kapitan.dev
+          fingerprint: D9234C61F58BEB3ED8552A57E28DC07A3CBFAE7C
+
+  rook:
+    cluster:
+      db_size_mb: 1024
+      journal_size_mb: 1024
